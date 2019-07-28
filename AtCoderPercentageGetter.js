@@ -18,17 +18,32 @@
     const problemNames = [];
     contestData.TaskInfo.forEach(res => problemNames.push(res.TaskScreenName));
 
+    //コンテスト情報を辞書型に直す
     const contestResultData = {};
-    contestData.StandingsData.forEach(res => contestResultData[res.UserName] = res);
-    console.log(contestResultData);
+    contestData.StandingsData.forEach(res => contestResultData[res.UserScreenName] = res);
+
+    //参加者自身のusername
+    const userScreenName = getUserScreenName();
+    //参加者自身のRating
+    const userRating = contestResultData[userScreenName].Rating;
+
+
 })();
 
+//参加しているコンテスト名を取得する。
 function getContestName() {
     let contestURL = location.href;
     let contestArray = contestURL.split('/');
     return contestArray[contestArray.length - 2];
 }
 
+//コンテストデータを取得する。
 async function getContestStandingsData(contestScreenName) {
     return await $.ajax(`https://atcoder.jp/contests/${contestScreenName}/standings/json`);
+}
+
+//参加者自身のusernameを取得する。
+function getUserScreenName() {
+    let userScreenName = document.querySelector("#navbar-collapse > ul.nav.navbar-nav.navbar-right > li:nth-child(2) > a").textContent.split(' ');
+    return userScreenName[1];
 }
