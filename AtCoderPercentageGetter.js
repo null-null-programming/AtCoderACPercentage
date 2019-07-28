@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         AtCoderPercentageGetter
-// @namespace    http://tampermonkey.net/
+// @namespace    https://github.com/null-null-programming
 // @version      0.1
 // @description  自分と同じくらいのレートの人々の何％がその問題を解けているかを表示する。
 // @author       null_null
@@ -18,11 +18,9 @@
     const problemNames = [];
     contestData.TaskInfo.forEach(res => problemNames.push(res.TaskScreenName));
 
-    //コンテストの情報を辞書型に直す
     const contestResultData = {};
     contestData.StandingsData.forEach(res => contestResultData[res.UserName] = res);
-
-
+    console.log(contestResultData);
 })();
 
 function getContestName() {
