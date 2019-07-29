@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         AtCoderPercentageGetter
+// @name         AtCoderACPercentage
 // @namespace    https://github.com/null-null-programming
 // @version      0.1
 // @description  自分と同じくらいのレートの人々の何％がその問題を解けているかを表示する。
@@ -19,6 +19,10 @@
     //コンテスト名のリスト
     const problemNames = [];
     contestData.TaskInfo.forEach(res => problemNames.push(res.TaskScreenName));
+    //問題名の記号（AとかBとか）配列 <-これを作っておかないとF1 F2 などが来たときにバグる
+    const Assignment = [''];
+    contestData.TaskInfo.forEach(res => Assignment.push(res.Assignment));
+
 
     //コンテスト情報を辞書型に直す userScreenName->Data
     const contestResultData = {};
@@ -26,9 +30,11 @@
     let contestUserName = [];
 
     contestData.StandingsData.forEach(res => {
+        //辞書型に変換
         contestResultData[res.UserScreenName] = res
-        //自分自身は除く
-        if (res.Competitions >= 15 && res.userName !== userScreenName) contestUserName.push(res.UserScreenName);
+
+        //コンテスト参加回数１５回未満、自分自身、未提出者は除いてリストに入れる
+        if (res.Competitions >= 15 && res.userName !== userScreenName && res.TotalResult.Count > 0) contestUserName.push(res.UserScreenName);
     });
 
     //参加者自身のRating
@@ -40,12 +46,10 @@
         return Math.abs(userRating - contestResultData[x].Rating) - Math.abs(userRating - contestResultData[y].Rating);
     });
 
-    //選抜者人数
-    const USER_NAM = Math.min(300, contestUserName.length);
-    //パーセントに直すときに割る定数
-    const DIV = USER_NAM / 100;
-
     //TODO:選抜者人数の見直し
+    //選抜者人数の１０パーセントを選抜者人数とする。
+    const USER_NAM = contestUserName.length * 0.1;
+
     //自身のレートに近いUSER_NAM人の参加者を選抜
     contestUserName = contestUserName.slice(0, USER_NAM);
 
@@ -61,10 +65,34 @@
         });
 
         //小数第１位までパーセントを表示
-        return Math.round(sum * 10 / DIV) / 10;
+        return Math.round(sum * 10 * 100 / USER_NAM) / 10;
     });
 
+    //結果を表示するテーブルを作成する。
+
+    //行を追加
+    let table = document.querySelector("#main-container > div.row > div:nth-child(3) > div.panel.panel-default.panel-standings > div.table-responsive > table");
+    let row = table.insertRow(-1);
+
+    //列を追加
+    let cells = [];
+
+    for (let i = 0; i < problemNames.length + 1; i++) {
+        cells[i] = row.insertCell(i);
+
+        if (i === 0) {
+            //行の左端  題名を書き込む
+            cells[i].innerText = 'AC Percentage';
+            cells[i].colSpan = "3";
+        } else {
+            //問題欄  計算結果と問題名アルファベットを書き込む
+            cells[i].innerText = Assignment[i] + ':' + solvedPercentage[i - 1] + '%';
+        }
+    }
+
+
 })();
+
 
 //参加しているコンテスト名を取得する。
 function getContestName() {
