@@ -13,6 +13,8 @@
     const contestScreenName = getContestName();
     //参加者自身のusername
     const userScreenName = getUserScreenName();
+    //参加者自身のRating
+    const userRating = getUserRating(userScreenName);
     //コンテスト情報
     const contestData = await getContestStandingsData(contestScreenName);
 
@@ -36,9 +38,6 @@
         //コンテスト参加回数１５回未満、自分自身、未提出者は除いてリストに入れる
         if (res.Competitions >= 15 && res.userName !== userScreenName && res.TotalResult.Count > 0) contestUserName.push(res.UserScreenName);
     });
-
-    //参加者自身のRating
-    const userRating = contestResultData[userScreenName].Rating;
 
     //TODO:評価関数の洗練
     //自身のレートとの絶対値の差が小さい順に並び替え。
@@ -110,4 +109,11 @@ async function getContestStandingsData(contestScreenName) {
 function getUserScreenName() {
     let userScreenName = document.querySelector("#navbar-collapse > ul.nav.navbar-nav.navbar-right > li:nth-child(2) > a").textContent.split(' ');
     return userScreenName[1];
+}
+
+async function getUserRating(userScreenName) {
+    let parser = new DOMParser();
+    let archiveDom = parser.parseFromString((await $.get('https://atcoder.jp/users/' + userScreenName)), "text/html");
+    let userRating = archiveDom.querySelector("#main-container > div.row > div.col-sm-9 > table > tbody > tr:nth-child(2) > td > span");
+    return Number(userRating.innerText);
 }
