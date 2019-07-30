@@ -5,11 +5,13 @@
 // @description  自分と同じくらいのレートの人々の何％がその問題を解けているかを表示する。
 // @author       null_null
 // @license      MIT
-// @match        https://atcoder.jp/contests/*/standings
+// @match        https://atcoder.jp/contests/*/standings*
 // @require      https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js
 // ==/UserScript==
 
 (async function () {
+    //jsonのときは何もしない
+    if (window.location.href.endsWith("json")) return;
     //参加者自身のusername
     const userScreenName = getUserScreenName();
     //参加者自身のRating
