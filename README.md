@@ -9,5 +9,5 @@ AtCoderのuserscriptです。
 URL:https://www.tampermonkey.net
 
 
-2:GreasyForkでAtCoderColorNEWSをインストールします 
+2:GreasyForkでAtCoderACPercentageをインストールします 
 URL:https://greasyfork.org/ja/scripts/388000-atcoderacpercentage
