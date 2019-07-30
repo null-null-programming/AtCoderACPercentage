@@ -14,7 +14,7 @@
     //参加者自身のusername
     const userScreenName = getUserScreenName();
     //参加者自身のRating
-    const userRating = getUserRating(userScreenName);
+    const userRating = await getUserRating(userScreenName);
     //コンテスト情報
     const contestData = await getContestStandingsData(contestScreenName);
 
@@ -35,8 +35,8 @@
         //辞書型に変換
         contestResultData[res.UserScreenName] = res
 
-        //コンテスト参加回数１５回未満、自分自身、未提出者は除いてリストに入れる
-        if (res.Competitions >= 15 && res.userName !== userScreenName && res.TotalResult.Count > 0) contestUserName.push(res.UserScreenName);
+        //コンテスト参加回数１0回未満、自分自身、未提出者は除いてリストに入れる
+        if (res.Competitions >= 10 && res.UserScreenName !== userScreenName && res.TotalResult.Count > 0) contestUserName.push(res.UserScreenName);
     });
 
     //TODO:評価関数の洗練
@@ -51,6 +51,8 @@
 
     //自身のレートに近いUSER_NAM人の参加者を選抜
     contestUserName = contestUserName.slice(0, USER_NAM);
+
+    console.log(contestUserName);
 
     //何人が解けたかを問題ごとに集計
     let solvedPercentage = problemNames.map(problemName => {
@@ -70,7 +72,7 @@
     //結果を表示するテーブルを作成する。
 
     //行を追加
-    let table = document.querySelector("#main-container > div.row > div:nth-child(3) > div.panel.panel-default.panel-standings > div.table-responsive > table");
+    let table = document.getElementById('standings-tbody');
     let row = table.insertRow(-1);
 
     //列を追加
@@ -82,10 +84,12 @@
         if (i === 0) {
             //行の左端  題名を書き込む
             cells[i].innerText = 'AC Percentage';
+            cells[i].style.color = '#00AA3E';
             cells[i].colSpan = "3";
         } else {
             //問題欄  計算結果と問題名アルファベットを書き込む
             cells[i].innerText = Assignment[i] + ':' + solvedPercentage[i - 1] + '%';
+            cells[i].style.color = '#888888';
         }
     }
 
