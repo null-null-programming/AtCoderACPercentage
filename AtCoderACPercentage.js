@@ -10,21 +10,17 @@
 // ==/UserScript==
 
 (async function () {
-    //今参加しているコンテスト名
-    const contestScreenName = getContestName();
     //参加者自身のusername
     const userScreenName = getUserScreenName();
     //参加者自身のRating
     const userRating = await getUserRating(userScreenName);
     //コンテスト情報
-    const contestData = await getContestStandingsData(contestScreenName);
+    const contestData = await getContestStandingsData();
 
-    //コンテスト名のリスト
-    const problemNames = [];
-    contestData.TaskInfo.forEach(res => problemNames.push(res.TaskScreenName));
+    //問題名のリスト
+    const problemNames = contestData.TaskInfo.map(task => task.TaskScreenName);
     //問題名の記号（AとかBとか）配列 <-これを作っておかないとF1 F2 などが来たときにバグる
-    const Assignment = [''];
-    contestData.TaskInfo.forEach(res => Assignment.push(res.Assignment));
+    const Assignment = contestData.TaskInfo.map(task => task.Assignment);
 
 
     //コンテスト情報を辞書型に直す userScreenName->Data
@@ -34,10 +30,11 @@
 
     contestData.StandingsData.forEach(res => {
         //辞書型に変換
-        contestResultData[res.UserScreenName] = res
+        contestResultData[res.UserScreenName] = res;
 
         //コンテスト参加回数１0回未満、自分自身、未提出者は除いてリストに入れる
-        if (res.Competitions >= 10 && res.UserScreenName !== userScreenName && res.TotalResult.Count > 0) contestUserName.push(res.UserScreenName);
+        if (res.Competitions >= 10 && res.UserScreenName !== userScreenName && res.TotalResult.Count > 0)
+            contestUserName.push(res.UserScreenName);
     });
 
     //TODO:評価関数の洗練
@@ -53,17 +50,13 @@
     //自身のレートに近いUSER_NAM人の参加者を選抜
     contestUserName = contestUserName.slice(0, USER_NAM);
 
-    console.log(contestUserName);
-
     //何人が解けたかを問題ごとに集計
     let solvedPercentage = problemNames.map(problemName => {
         let sum = 0;
 
         //各ユーザーごとに集計
         contestUserName.forEach(userName => {
-            if (contestResultData[userName].TaskResults[problemName]) {
-                if (contestResultData[userName].TaskResults[problemName].Score > 0) sum++;
-            }
+            if ((contestResultData[userName].TaskResults[problemName] || -1).Score > 0) sum++;
         });
 
         //小数第１位までパーセントを表示
@@ -86,12 +79,13 @@
             //行の左端  題名を書き込む
             cells[i].innerText = 'AC Percentage';
             cells[i].style.color = '#00AA3E';
-            cells[i].colSpan = "3";
+            cells[i].colSpan = '3';
         } else {
             //問題欄  計算結果と問題名アルファベットを書き込む
-            cells[i].innerText = Assignment[i] + ':' + solvedPercentage[i - 1] + '%';
+            cells[i].innerText = Assignment[i - 1] + ':' + solvedPercentage[i - 1] + '%';
             cells[i].style.color = '#888888';
         }
+        cells[i].style.fontSize = '80%';
     }
 
 
@@ -106,8 +100,8 @@ function getContestName() {
 }
 
 //コンテストデータを取得する。
-async function getContestStandingsData(contestScreenName) {
-    return await $.ajax(`https://atcoder.jp/contests/${contestScreenName}/standings/json`);
+async function getContestStandingsData() {
+    return await $.ajax(`${window.location.href}/json`);
 }
 
 //参加者自身のusernameを取得する。
