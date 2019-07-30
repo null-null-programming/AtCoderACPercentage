@@ -103,7 +103,7 @@ function getContestName() {
 
 //コンテストデータを取得する。
 async function getContestStandingsData() {
-    return await $.ajax(`${window.location.href}/json`);
+    return await $.ajax(`https://atcoder.jp${window.location.pathname}/json`);
 }
 
 //参加者自身のusernameを取得する。
