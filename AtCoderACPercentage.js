@@ -118,7 +118,10 @@
         //結果を表示するテーブルを作成する。
         //行を取得
         let row = document.getElementById('ac-percentage-row');
-        if (!row) initView();
+        if (!row) {
+            initView();
+            row = document.getElementById('ac-percentage-row');
+        }
 
         for (let i = 1; i < problemNames.length + 1; i++) {
             let cell = row.children[i];
