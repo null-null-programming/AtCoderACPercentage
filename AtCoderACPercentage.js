@@ -49,14 +49,14 @@
     function updateData(){
         //コンテスト情報を辞書型に直す userScreenName->Data
         const contestResultData = {};
-        //参加回数が１5回以上のコンテスト参加者のuserScreenNameリスト
+        //参加回数が15回以上のコンテスト参加者のuserScreenNameリスト
         let contestUserName = [];
 
         standings.StandingsData.forEach(res => {
             //辞書型に変換
             contestResultData[res.UserScreenName] = res;
 
-            //コンテスト参加回数１0回未満、自分自身、未提出者は除いてリストに入れる
+            //コンテスト参加回数10回未満、自分自身、未提出者は除いてリストに入れる
             if (res.Competitions >= 10 && res.UserScreenName !== userScreenName && res.TotalResult.Count > 0)
                 contestUserName.push(res.UserScreenName);
         });
@@ -68,11 +68,11 @@
         });
 
         //TODO:選抜者人数の見直し
-        //選抜者人数の１０パーセントを選抜者人数とする。
-        const USER_NAM = contestUserName.length * 0.1;
+        //選抜者人数の10パーセントを選抜者人数とする。
+        const USER_NUM = contestUserName.length * 0.1;
 
-        //自身のレートに近いUSER_NAM人の参加者を選抜
-        contestUserName = contestUserName.slice(0, USER_NAM);
+        //自身のレートに近いUSER_NUM人の参加者を選抜
+        contestUserName = contestUserName.slice(0, USER_NUM);
 
         //何人が解けたかを問題ごとに集計
         solvedPercentage = problemNames.map(problemName => {
@@ -84,7 +84,7 @@
             });
 
             //小数第１位までパーセントを表示
-            return Math.round(sum * 10 * 100 / USER_NAM) / 10;
+            return Math.round(sum * 10 * 100 / USER_NUM) / 10;
         });
     }
 
