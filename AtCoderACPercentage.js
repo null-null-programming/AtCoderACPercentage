@@ -21,6 +21,7 @@
 
     let solvedPercentage;
 
+    initView();
     updateData();
     updateView();
 
