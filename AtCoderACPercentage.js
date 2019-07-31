@@ -13,13 +13,11 @@
 (async function () {
     //参加者自身のRating
     const userRating = await getUserRating(userScreenName);
-    //コンテスト情報
-    const contestData = await getContestStandingsData();
 
     //問題名のリスト
-    const problemNames = contestData.TaskInfo.map(task => task.TaskScreenName);
+    const problemNames = standings.TaskInfo.map(task => task.TaskScreenName);
     //問題名の記号（AとかBとか）配列 <-これを作っておかないとF1 F2 などが来たときにバグる
-    const Assignment = contestData.TaskInfo.map(task => task.Assignment);
+    const Assignment = standings.TaskInfo.map(task => task.Assignment);
 
     //ビューのupdate監視 いやこれpredictorとコンフリクトしねえか
     new MutationObserver(updateView).observe(
@@ -51,7 +49,7 @@
         //参加回数が１5回以上のコンテスト参加者のuserScreenNameリスト
         let contestUserName = [];
 
-        contestData.StandingsData.forEach(res => {
+        standings.StandingsData.forEach(res => {
             //辞書型に変換
             contestResultData[res.UserScreenName] = res;
 
@@ -126,11 +124,6 @@ function getContestName() {
     let contestURL = location.href;
     let contestArray = contestURL.split('/');
     return contestArray[contestArray.length - 2];
-}
-
-//コンテストデータを取得する。
-async function getContestStandingsData() {
-    return await $.ajax(`https://atcoder.jp${window.location.pathname}/json`);
 }
 
 async function getUserRating(userScreenName) {
