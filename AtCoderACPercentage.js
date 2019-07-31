@@ -19,7 +19,13 @@
     //問題名の記号（AとかBとか）配列 <-これを作っておかないとF1 F2 などが来たときにバグる
     const Assignment = standings.TaskInfo.map(task => task.Assignment);
 
-    //ビューのupdate監視 いやこれpredictorとコンフリクトしねえか
+    let solvedPercentage;
+    
+    updateData();
+    initView();
+    updateView();
+    
+    //ビューのupdate監視
     new MutationObserver(updateView).observe(
         document.getElementById("standings-tbody"),
         { childList: true }
@@ -39,9 +45,6 @@
         attributes: true,
         attributeFilter: ["class"]
     });
-    
-    updateData();
-    updateView();
 
     function updateData(){
         //コンテスト情報を辞書型に直す userScreenName->Data
@@ -72,7 +75,7 @@
         contestUserName = contestUserName.slice(0, USER_NAM);
 
         //何人が解けたかを問題ごとに集計
-        let solvedPercentage = problemNames.map(problemName => {
+        solvedPercentage = problemNames.map(problemName => {
             let sum = 0;
 
             //各ユーザーごとに集計
@@ -85,19 +88,14 @@
         });
     }
 
-    function updateView(){
-        //前のrowが残っていた場合削除
-        const oldRow = document.getElementById("ac-precentage-row")
-        if (oldRow) oldRow.remove();
-
+    function initView(){
         //結果を表示するテーブルを作成する。
         //行を追加
         let table = document.getElementById('standings-tbody');
         let row = table.insertRow(-1);
 
-        //識別用id
-        row.id = "ac-precentage-row";
-
+        row.id = 'ac-percentage-row';
+        
         //列を追加
         let cells = [];
 
@@ -110,11 +108,20 @@
                 cells[i].style.color = '#00AA3E';
                 cells[i].colSpan = '3';
             } else {
-                //問題欄  計算結果と問題名アルファベットを書き込む
-                cells[i].innerText = Assignment[i - 1] + ':' + solvedPercentage[i - 1] + '%';
                 cells[i].style.color = '#888888';
             }
             cells[i].style.fontSize = '80%';
+        }
+    }
+    
+    function updateView(){
+        //結果を表示するテーブルを作成する。
+        //行を取得
+        let row = document.getElementById('ac-percentage-row');
+
+        for (let i = 1; i < problemNames.length + 1; i++) {
+            let cell = row.children[i];
+            cell.innerText = Assignment[i - 1] + ':' + solvedPercentage[i - 1] + '%';
         }
     }
 })();
