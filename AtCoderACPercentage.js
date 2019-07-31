@@ -131,7 +131,9 @@
 function getContestName() {
     let contestURL = location.href;
     let contestArray = contestURL.split('/');
-    return contestArray[contestArray.length - 2];
+    return contestArray[contestArray.length - 1] == '' // whether ended with '/'
+        ? contestArray[contestArray.length - 3]
+        : contestArray[contestArray.length - 2];
 }
 
 async function getUserRating(userScreenName) {
