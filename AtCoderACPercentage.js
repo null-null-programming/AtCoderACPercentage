@@ -20,17 +20,16 @@
     const Assignment = standings.TaskInfo.map(task => task.Assignment);
 
     let solvedPercentage;
-    
+
     updateData();
-    initView();
     updateView();
-    
+
     //ビューのupdate監視
     new MutationObserver(updateView).observe(
         document.getElementById("standings-tbody"),
         { childList: true }
     );
-    
+
     //リフレッシュボタンの監視(押されたとき/自動更新時に一瞬だけ無効化される)
     new MutationObserver(async mutationRecord => {
         const isDisabled = mutationRecord[0].target.classList.contains(
@@ -95,7 +94,7 @@
         let row = table.insertRow(-1);
 
         row.id = 'ac-percentage-row';
-        
+
         //列を追加
         let cells = [];
 
@@ -113,11 +112,12 @@
             cells[i].style.fontSize = '80%';
         }
     }
-    
+
     function updateView(){
         //結果を表示するテーブルを作成する。
         //行を取得
         let row = document.getElementById('ac-percentage-row');
+        if (!row) initView();
 
         for (let i = 1; i < problemNames.length + 1; i++) {
             let cell = row.children[i];
